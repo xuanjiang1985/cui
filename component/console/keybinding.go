@@ -8,7 +8,7 @@ import (
 
 // Keybinding action
 func Keybinding(g *gocui.Gui) error {
-	if err := g.SetKeybinding("console", gocui.KeyCtrlX, gocui.ModNone, clearMsg); err != nil {
+	if err := g.SetKeybinding("console", gocui.MouseLeft, gocui.ModNone, clearMsg); err != nil {
 		return err
 	}
 	return nil
@@ -20,9 +20,13 @@ func clearMsg(g *gocui.Gui, v *gocui.View) error {
 		return err
 	}
 
-	scrollView(v, 5)
+	if _, err := g.SetCurrentView(v.Name()); err != nil {
+		return err
+	}
 
-	fmt.Fprintln(v, "clear")
+	cx, cy := v.Cursor()
+
+	fmt.Fprintln(v, "cursor position:", cx, cy)
 
 	return nil
 }

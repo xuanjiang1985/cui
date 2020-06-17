@@ -28,13 +28,16 @@ func showMsg(g *gocui.Gui, v *gocui.View) error {
 	// 	return nil
 	// })
 
-	v, err := g.View("console")
+	if _, err := g.SetCurrentView(v.Name()); err != nil {
+		return err
+	}
+
+	v2, err := g.View("console")
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintln(v, time.Now().Unix())
-	return nil
+	fmt.Fprintln(v2, time.Now().Unix())
 
 	return nil
 }

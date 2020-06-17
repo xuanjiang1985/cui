@@ -17,7 +17,6 @@ func main() {
 	}
 	defer g.Close()
 
-	g.Cursor = true
 	g.Mouse = true
 	g.Highlight = true
 	g.SelFgColor = gocui.ColorGreen
@@ -36,6 +35,10 @@ func main() {
 		fmt.Println(err)
 	}
 
+	if err := help.Keybinding(g); err != nil {
+		fmt.Println(err)
+	}
+
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
 	}
@@ -45,12 +48,13 @@ func layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
 
 	// form component
-	if err := form.View(g, 2, 2, maxX-2, 7); err != nil {
+	formY2 := 7
+	if err := form.View(g, 2, 2, maxX-2, formY2); err != nil {
 		log.Panicln(err)
 	}
 
 	// console component
-	if err := console.View(g, 2, 8, maxX-2, 16); err != nil {
+	if err := console.View(g, 2, formY2+2, maxX-2, 16); err != nil {
 		log.Panicln(err)
 	}
 

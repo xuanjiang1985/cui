@@ -13,7 +13,7 @@ func View(g *gocui.Gui, x0, y0, x1, y1 int) error {
 			return err
 		}
 		v.Title = "help"
-		fmt.Fprintln(v, "ctrl + c: Exit; ctrl + x: clear console")
+		fmt.Fprintln(v, "ctrl + c: Exit;")
 	}
 
 	return nil
