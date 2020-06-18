@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cui/component"
 	"cui/component/console"
 	"cui/component/form"
 	"cui/component/help"
@@ -10,14 +11,20 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
+var (
+	done = make(chan struct{})
+	msg  = make(chan string, 100)
+)
+
 func main() {
-	g, err := gocui.NewGui(gocui.Output256)
+	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
 	}
 	defer g.Close()
 
 	g.Mouse = true
+	g.Cursor = true
 	g.Highlight = true
 	g.SelFgColor = gocui.ColorGreen
 
@@ -39,22 +46,25 @@ func main() {
 		fmt.Println(err)
 	}
 
+	go component.Pipe(g, done, msg)
+
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
 	}
+
 }
 
 func layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
 
 	// form component
-	formY2 := 7
+	formY2 := 12
 	if err := form.View(g, 2, 2, maxX-2, formY2); err != nil {
 		log.Panicln(err)
 	}
 
 	// console component
-	if err := console.View(g, 2, formY2+2, maxX-2, 16); err != nil {
+	if err := console.View(g, 2, formY2+2, maxX-2, maxY-4); err != nil {
 		log.Panicln(err)
 	}
 
@@ -67,5 +77,6 @@ func layout(g *gocui.Gui) error {
 }
 
 func quit(g *gocui.Gui, v *gocui.View) error {
+	close(done)
 	return gocui.ErrQuit
 }
